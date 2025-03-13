@@ -1,31 +1,381 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title>4x4 Tic-Tac-Toe with AI</title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2113.6">
-  <style type="text/css">
-    body {background-color: #0f0f0f}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 14.4px Arial; color: #f2f2f2; -webkit-text-stroke: #f2f2f2}
-    p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Arial; color: #f2f2f2; -webkit-text-stroke: #f2f2f2; background-color: #0f0f0f}
-    p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px 'Helvetica Neue'; color: #ffffff; -webkit-text-stroke: #ffffff; background-color: #262626}
-    p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px 'Helvetica Neue'; color: #ffffff; -webkit-text-stroke: #ffffff; background-color: #262626; min-height: 13.0px}
-    p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 12.0px 'Helvetica Neue'; color: #ffffff; -webkit-text-stroke: #ffffff; background-color: #262626}
-    span.s1 {font-kerning: none; background-color: #0f0f0f}
-    span.s2 {font-kerning: none}
-    span.s3 {font: 11.0px Times; font-kerning: none}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4x4 Tic-Tac-Toe with AI</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #121212;
+            color: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .status {
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .cell {
+            aspect-ratio: 1/1;
+            background-color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .cell:hover {
+            background-color: #444;
+        }
+
+        .cell.x {
+            color: #ffffff;
+        }
+
+        .cell.o {
+            color: #cccccc;
+        }
+
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #444;
+        }
+
+        .difficulty {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .difficulty label {
+            margin-right: 10px;
+        }
+
+        select {
+            padding: 8px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 450px) {
+            .board {
+                max-width: 300px;
+            }
+            
+            .cell {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
-<h1 style="margin: 0.0px 0.0px 10.0px 0.0px; text-align: center; font: 24.0px Arial; color: #f2f2f2; -webkit-text-stroke: #f2f2f2"><span class="s1"><b>4x4 Tic-Tac-Toe</b></span></h1>
-<p class="p2"><span class="s1">Nauman’s turn (X)</span></p>
-<p class="p3"><span class="s2">AI Difficulty:</span></p>
-<p class="p4"><span class="s2"><span class="Apple-converted-space">            </span></span><span class="s3">Easy</span></p>
-<p class="p4"><span class="s2"><span class="Apple-converted-space">            </span></span><span class="s3">Medium</span></p>
-<p class="p4"><span class="s2"><span class="Apple-converted-space">            </span></span><span class="s3">Hard</span></p>
-<p class="p5"><span class="s2"><span class="Apple-converted-space">        </span></span></p>
-<p class="p6"><span class="s2">Restart Game</span></p>
+    <h1>4x4 Tic-Tac-Toe</h1>
+    <div class="status" id="status">Nauman turn (X)</div>
+    <div class="board" id="board"></div>
+    <div class="difficulty">
+        <label for="depth">AI Difficulty:</label>
+        <select id="depth">
+            <option value="1">Easy</option>
+            <option value="3" selected>Medium</option>
+            <option value="5">Hard</option>
+        </select>
+    </div>
+    <div class="controls">
+        <button id="restart">Restart Game</button>
+    </div>
+
+    <script>
+        // Game state
+        const board = Array(16).fill(null);
+        let isPlayerTurn = true;
+        let gameOver = false;
+        const PLAYER = 'X';
+        const AI = 'O';
+        
+        // Initialize the board
+        function initBoard() {
+            const boardElement = document.getElementById('board');
+            boardElement.innerHTML = '';
+            
+            for (let i = 0; i < 16; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.dataset.index = i;
+                cell.addEventListener('click', handleCellClick);
+                boardElement.appendChild(cell);
+            }
+        }
+        
+        // Handle cell click
+        function handleCellClick(e) {
+            if (!isPlayerTurn || gameOver) return;
+            
+            const index = e.target.dataset.index;
+            if (board[index] === null) {
+                makeMove(index, PLAYER);
+                
+                if (!gameOver) {
+                    isPlayerTurn = false;
+                    updateStatus();
+                    
+                    // AI move with slight delay for better UX
+                    setTimeout(() => {
+                        aiMove();
+                        isPlayerTurn = true;
+                        updateStatus();
+                    }, 300);
+                }
+            }
+        }
+        
+        // Make a move and update the board
+        function makeMove(index, player) {
+            board[index] = player;
+            updateBoardUI();
+            
+            const winner = checkWinner();
+            if (winner) {
+                gameOver = true;
+                document.getElementById('status').textContent = winner === PLAYER ? 
+                    'You win!' : 'AI wins!';
+            } else if (board.every(cell => cell !== null)) {
+                gameOver = true;
+                document.getElementById('status').textContent = 'Draw!';
+            }
+        }
+        
+        // Update the board UI
+        function updateBoardUI() {
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach((cell, index) => {
+                cell.textContent = board[index] || '';
+                cell.className = 'cell' + (board[index] ? ' ' + board[index].toLowerCase() : '');
+            });
+        }
+        
+        // Update game status message
+        function updateStatus() {
+            if (gameOver) return;
+            const status = document.getElementById('status');
+            status.textContent = isPlayerTurn ? 'Nauman turn (X)' : 'AI thinking...';
+        }
+        
+        // Check if there's a winner
+        function checkWinner() {
+            // Rows
+            for (let i = 0; i < 16; i += 4) {
+                if (board[i] && board[i] === board[i+1] && board[i] === board[i+2] && board[i] === board[i+3]) {
+                    return board[i];
+                }
+            }
+            
+            // Columns
+            for (let i = 0; i < 4; i++) {
+                if (board[i] && board[i] === board[i+4] && board[i] === board[i+8] && board[i] === board[i+12]) {
+                    return board[i];
+                }
+            }
+            
+            // Diagonals
+            if (board[0] && board[0] === board[5] && board[0] === board[10] && board[0] === board[15]) {
+                return board[0];
+            }
+            if (board[3] && board[3] === board[6] && board[3] === board[9] && board[3] === board[12]) {
+                return board[3];
+            }
+            
+            return null;
+        }
+        
+        // AI move using alpha-beta pruning
+        function aiMove() {
+            if (gameOver) return;
+            
+            const depth = parseInt(document.getElementById('depth').value);
+            let bestScore = -Infinity;
+            let bestMove = null;
+            
+            // Find available moves
+            const availableMoves = board.map((cell, index) => cell === null ? index : null).filter(index => index !== null);
+            
+            // If this is the first move, pick a random spot for variety
+            if (availableMoves.length >= 15) {
+                bestMove = availableMoves[Math.floor(Math.random() * availableMoves.length)];
+            } else {
+                // Use alpha-beta pruning to find best move
+                for (const move of availableMoves) {
+                    board[move] = AI;
+                    const score = minimax(board, depth, -Infinity, Infinity, false);
+                    board[move] = null;
+                    
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestMove = move;
+                    }
+                }
+            }
+            
+            if (bestMove !== null) {
+                makeMove(bestMove, AI);
+            }
+        }
+        
+        // Minimax algorithm with alpha-beta pruning
+        function minimax(currentBoard, depth, alpha, beta, isMaximizing) {
+            // Check for terminal states
+            const winner = checkWinner();
+            if (winner === AI) return 100 + depth;
+            if (winner === PLAYER) return -100 - depth;
+            if (currentBoard.every(cell => cell !== null)) return 0;
+            if (depth === 0) return evaluateBoard(currentBoard);
+            
+            if (isMaximizing) {
+                let maxScore = -Infinity;
+                
+                for (let i = 0; i < 16; i++) {
+                    if (currentBoard[i] === null) {
+                        currentBoard[i] = AI;
+                        const score = minimax(currentBoard, depth - 1, alpha, beta, false);
+                        currentBoard[i] = null;
+                        maxScore = Math.max(score, maxScore);
+                        
+                        alpha = Math.max(alpha, score);
+                        if (beta <= alpha) break; // Beta cutoff
+                    }
+                }
+                
+                return maxScore;
+            } else {
+                let minScore = Infinity;
+                
+                for (let i = 0; i < 16; i++) {
+                    if (currentBoard[i] === null) {
+                        currentBoard[i] = PLAYER;
+                        const score = minimax(currentBoard, depth - 1, alpha, beta, true);
+                        currentBoard[i] = null;
+                        minScore = Math.min(score, minScore);
+                        
+                        beta = Math.min(beta, score);
+                        if (beta <= alpha) break; // Alpha cutoff
+                    }
+                }
+                
+                return minScore;
+            }
+        }
+        
+        // Evaluate the current board state
+        function evaluateBoard(currentBoard) {
+            // Simple evaluation function that counts potential winning lines
+            let score = 0;
+            
+            // Check rows
+            for (let i = 0; i < 16; i += 4) {
+                score += evaluateLine(currentBoard[i], currentBoard[i+1], currentBoard[i+2], currentBoard[i+3]);
+            }
+            
+            // Check columns
+            for (let i = 0; i < 4; i++) {
+                score += evaluateLine(currentBoard[i], currentBoard[i+4], currentBoard[i+8], currentBoard[i+12]);
+            }
+            
+            // Check diagonals
+            score += evaluateLine(currentBoard[0], currentBoard[5], currentBoard[10], currentBoard[15]);
+            score += evaluateLine(currentBoard[3], currentBoard[6], currentBoard[9], currentBoard[12]);
+            
+            return score;
+        }
+        
+        // Evaluate a single line (row, column, or diagonal)
+        function evaluateLine(c1, c2, c3, c4) {
+            let score = 0;
+            
+            // Count AI and player markers
+            let aiCount = [c1, c2, c3, c4].filter(c => c === AI).length;
+            let playerCount = [c1, c2, c3, c4].filter(c => c === PLAYER).length;
+            
+            // If both have markers in this line, it's not winnable
+            if (aiCount > 0 && playerCount > 0) return 0;
+            
+            // Score based on number of markers
+            if (aiCount > 0) {
+                if (aiCount === 1) score = 1;
+                else if (aiCount === 2) score = 10;
+                else if (aiCount === 3) score = 50;
+            }
+            
+            if (playerCount > 0) {
+                if (playerCount === 1) score = -1;
+                else if (playerCount === 2) score = -10;
+                else if (playerCount === 3) score = -50;
+            }
+            
+            return score;
+        }
+        
+        // Reset the game
+        function resetGame() {
+            board.fill(null);
+            gameOver = false;
+            isPlayerTurn = true;
+            updateBoardUI();
+            updateStatus();
+        }
+        
+        // Initialize the game
+        document.addEventListener('DOMContentLoaded', () => {
+            initBoard();
+            document.getElementById('restart').addEventListener('click', resetGame);
+        });
+    </script>
 </body>
 </html>
